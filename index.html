@@ -4,48 +4,33 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>小宝伴眠助手</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
   <style>
     @import url("https://fonts.googleapis.com/css2?family=Saira:wght@400;600;700&display=swap");
 
-    @property --k {
-      syntax: '<number>';
-      initial-value: -1;
-      inherits: true
-    }
-
     * { margin: 0; box-sizing: border-box; }
 
-    html {
-      scrollbar-width: none;
-      height: calc(var(--n)*100%)
-    }
-
-    body, header, main, section,
-    article, figure { display: grid }
-
     body {
-      --dir: 0;
-      grid-template-rows: max-content 1fr max-content;
-      position: fixed;
-      width: 100%;
+      font-family: 'Saira', sans-serif;
+      background: #0a0a0a;
+      color: #dedede;
       height: 100vh;
       height: 100dvh;
-      color: #dedede;
-      font: clamp(.625em, 3vmin, 1.5em)/ 1.25 'Saira', sans-serif;
-      animation: k 1s linear;
-      animation-timeline: scroll();
-      background: #0a0a0a;
-      overflow-x: hidden;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      -webkit-user-select: none;
+      user-select: none;
+      touch-action: pan-y;
     }
 
-    @keyframes k { to { --k: 1 } }
-
-    header {
-      place-content: center;
-      place-items: center;
+    .page-header {
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       padding: 14px 16px;
       text-align: center;
-      text-wrap: balance;
       position: relative;
       z-index: 10;
       background: rgba(10, 10, 10, 0.85);
@@ -54,7 +39,7 @@
       border-bottom: 1px solid rgba(255,255,255,0.06);
     }
 
-    header h1 {
+    .page-header h1 {
       font-size: 1em;
       font-weight: 700;
       letter-spacing: 3px;
@@ -62,7 +47,7 @@
       text-shadow: 0 0 10px rgba(100, 180, 255, 0.5), 0 0 24px rgba(100, 180, 255, 0.25);
     }
 
-    header strong {
+    .page-header strong {
       display: block;
       font-size: .5em;
       color: #7a8599;
@@ -70,159 +55,128 @@
       font-weight: 400;
     }
 
-    header em {
-      display: block;
-      font-size: .45em;
-      color: #555;
-      margin-top: 2px;
-      max-width: 32em;
-    }
-
-    main {
+    .gallery-viewport {
+      flex: 1;
+      position: relative;
       overflow: hidden;
-      perspective: 50em
+      perspective: 800px;
     }
 
-    section, article { transform-style: preserve-3d }
-
-    section {
-      --r: calc(2 + var(--dir))/ 3;
-      --w: clamp(6em, min(50vh, 30vw), 20em);
-      --z: calc(var(--f, 1.25)*-.5*var(--w)/tan(.5turn/var(--n)));
-      place-self: center;
-      translate: 0 0 var(--z);
-      rotate: var(--dir) calc(1 - var(--dir)) 0 calc((var(--k) + .5)*-1turn);
+    .gallery-track {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      transform-style: preserve-3d;
+      transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
-    article, header, figure, img { grid-area: 1/ 1 }
-
-    article {
-      --j: var(--i)/var(--n);
-      --dif-lin: calc(var(--j) - mod(var(--k) + 1, 1));
-      --abs-lin: abs(var(--dif-lin));
-      --dif-mid: calc(.5 - var(--abs-lin));
-      --abs-mid: abs(var(--dif-mid));
-      --dif-arc: calc(2*(.5 - var(--abs-mid)));
-      --lim: .35;
-      --sel: max(0, calc((var(--lim) - var(--dif-arc))/var(--lim)));
-      --out: calc(1 - var(--sel));
-      width: var(--w);
-      aspect-ratio: var(--r);
-      transform:
-        rotate3d(var(--dir), calc(1 - var(--dir)), 0, calc(var(--j)*1turn))
-        translatez(var(--z))
-        rotate(calc(var(--dir)*.5turn));
+    .gallery-item {
+      position: absolute;
+      width: 180px;
+      height: 180px;
+      left: -90px;
+      top: -90px;
+      transform-style: preserve-3d;
+      transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  filter 0.4s ease,
+                  opacity 0.4s ease;
       cursor: pointer;
-      transition: filter 0.3s ease;
-
-      @supports not (scale: abs(-1)) {
-        --abs-lin: max(var(--dif-lin), -1*var(--dif-lin));
-        --abs-mid: max(var(--dif-mid), -1*var(--dif-mid))
-      }
+      -webkit-tap-highlight-color: transparent;
     }
 
-    article figure {
+    .gallery-item .card-face {
+      width: 100%;
+      height: 100%;
+      border-radius: 14px;
       overflow: hidden;
       position: relative;
-      border: solid 3px rgba(255,255,255,0.08);
-      border-radius: .6em;
-      backface-visibility: hidden;
-      box-shadow: 5px 5px 13px #000;
-      background: #121212;
-      pointer-events: none;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+      border: 2px solid rgba(255, 255, 255, 0.08);
+      background: #1a1a1a;
     }
 
-    article.is-front figure {
-      border-color: rgba(100, 180, 255, 0.3);
-      box-shadow: 0 0 20px rgba(100, 180, 255, 0.15), 5px 5px 13px #000;
+    .gallery-item.is-active .card-face {
+      border-color: rgba(100, 180, 255, 0.4);
+      box-shadow: 0 0 24px rgba(100, 180, 255, 0.2), 0 8px 24px rgba(0, 0, 0, 0.6);
     }
 
-    article:not(.is-front) figure::after {
+    .gallery-item .card-face img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .gallery-item:not(.is-active) .card-face img {
+      filter: grayscale(1) brightness(0.5);
+    }
+
+    .gallery-item.is-active .card-face img {
+      filter: grayscale(0) brightness(1);
+    }
+
+    .gallery-item:not(.is-active)::after {
       content: '';
       position: absolute;
       inset: 0;
-      background: rgba(0, 0, 0, 0.55);
+      border-radius: 14px;
+      background: rgba(0, 0, 0, 0.4);
       pointer-events: none;
     }
 
-    article figure header {
-      background: none;
-      border: none;
-      backdrop-filter: none;
-      -webkit-backdrop-filter: none;
-      padding: 0;
+    .gallery-item.is-active::after {
+      display: none;
     }
 
-    .card-info {
+    .card-overlay {
       position: absolute;
       bottom: 0;
       left: 0;
       right: 0;
-      padding: 12px 10px 8px;
-      background: linear-gradient(transparent, rgba(0,0,0,0.8));
-      pointer-events: none;
-      z-index: 2;
+      padding: 12px 10px 10px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.85));
       opacity: 0;
       transition: opacity 0.3s ease;
+      pointer-events: none;
+      z-index: 2;
     }
 
-    article.is-front .card-info {
+    .gallery-item.is-active .card-overlay {
       opacity: 1;
     }
 
-    .card-info h2 {
-      font-size: 1em;
+    .card-overlay h2 {
+      font-size: 0.95em;
       font-weight: 700;
       color: #fff;
       text-shadow: 1px 1px 3px #000;
-      margin: 0;
+      margin: 0 0 2px;
     }
 
-    .card-info em {
-      font-size: .7em;
+    .card-overlay em {
+      font-size: 0.7em;
       color: #aaa;
       font-style: normal;
       text-shadow: 1px 1px 2px #000;
     }
 
-    img {
-      width: 100%;
-      height: 100%;
-      aspect-ratio: var(--r);
-      object-fit: cover;
-      object-position: var(--pos);
-      transition: filter 0.3s ease;
-    }
-
-    article:not(.is-front) img {
-      filter: grayscale(1) brightness(0.7);
-    }
-
-    article.is-front img {
-      filter: grayscale(0) brightness(1);
-    }
-
-    .empty-cover {
-      width: 100%;
-      height: 100%;
-      aspect-ratio: var(--r);
+    .empty-card .card-face {
+      background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
       color: #333;
-      font-size: .8em;
       gap: 6px;
+      font-size: 0.8em;
     }
 
-    .empty-cover i {
+    .empty-card .card-face i {
       font-size: 1.6em;
-      opacity: .3;
+      opacity: 0.3;
     }
-
-    footer { display: block; }
 
     .firefly {
       position: absolute;
@@ -243,109 +197,186 @@
       100% { transform: translate(var(--dx), var(--dy)); opacity: 0; }
     }
 
-    @media (max-aspect-ratio: 2/ 3) { :root { --dir: 1 } }
+    @media (min-width: 500px) {
+      .gallery-item { width: 220px; height: 220px; left: -110px; top: -110px; }
+    }
 
-    @media (max-width: 480px) {
-      section { --w: clamp(5em, min(45vh, 28vw), 16em); }
-      header h1 { font-size: .95em; }
+    @media (max-width: 360px) {
+      .gallery-item { width: 160px; height: 160px; left: -80px; top: -80px; }
     }
   </style>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
 </head>
 <body>
-  <header id="pageHeader">
+  <div class="page-header" id="pageHeader">
     <h1>小宝伴眠助手</h1>
-    <strong>上下滑动浏览专辑</strong>
-    <em>点击封面进入播放</em>
-  </header>
+    <strong>左右滑动浏览专辑</strong>
+  </div>
 
-  <main>
-    <section class="assembly">
-      <article style="--i: 0; --url: url(picture/cover1.jpg); --pos: 50% 40%" onclick="location.href='player.html?album=xi'">
-        <figure>
-          <img src="picture/cover1.jpg" alt="波西和皮普" />
-          <header>
-            <div class="card-info">
-              <h2>波西和皮普</h2>
-              <em>11 个故事</em>
-            </div>
-          </header>
-        </figure>
-      </article>
-
-      <article style="--i: 1; --url: url(picture-11cat/cover2.jpg); --pos: 50% 40%" onclick="location.href='player.html?album=cat'">
-        <figure>
-          <img src="picture-11cat/cover2.jpg" alt="11只猫的故事" />
-          <header>
-            <div class="card-info">
-              <h2>11只猫的故事</h2>
-              <em>故事加载中...</em>
-            </div>
-          </header>
-        </figure>
-      </article>
-
-      <article class="is-empty" style="--i: 2">
-        <figure>
-          <div class="empty-cover"><i class="fa-solid fa-lock"></i>即将上线</div>
-        </figure>
-      </article>
-
-      <article class="is-empty" style="--i: 3">
-        <figure>
-          <div class="empty-cover"><i class="fa-solid fa-lock"></i>即将上线</div>
-        </figure>
-      </article>
-
-      <article class="is-empty" style="--i: 4">
-        <figure>
-          <div class="empty-cover"><i class="fa-solid fa-lock"></i>即将上线</div>
-        </figure>
-      </article>
-
-      <article class="is-empty" style="--i: 5">
-        <figure>
-          <div class="empty-cover"><i class="fa-solid fa-lock"></i>即将上线</div>
-        </figure>
-      </article>
-
-      <article class="is-empty" style="--i: 6">
-        <figure>
-          <div class="empty-cover"><i class="fa-solid fa-lock"></i>即将上线</div>
-        </figure>
-      </article>
-
-      <article class="is-empty" style="--i: 7">
-        <figure>
-          <div class="empty-cover"><i class="fa-solid fa-lock"></i>即将上线</div>
-        </figure>
-      </article>
-    </section>
-  </main>
-
-  <footer></footer>
+  <div class="gallery-viewport" id="galleryViewport">
+    <div class="gallery-track" id="galleryTrack"></div>
+  </div>
 
   <script>
-    let n = document.querySelectorAll('article').length;
-    document.documentElement.style.setProperty('--n', n);
+    const albums = [
+      { key: "xi",  name: "波西和皮普",    sub: "11 个故事",  cover: "picture/cover1.jpg",          link: "player.html?album=xi",  active: true },
+      { key: "cat", name: "11只猫的故事",   sub: "故事加载中...", cover: "picture-11cat/cover2.jpg",    link: "player.html?album=cat", active: true },
+      { key: "e3",  name: "即将上线",       sub: "敬请期待",   cover: "", link: "", active: false },
+      { key: "e4",  name: "即将上线",       sub: "敬请期待",   cover: "", link: "", active: false },
+      { key: "e5",  name: "即将上线",       sub: "敬请期待",   cover: "", link: "", active: false },
+      { key: "e6",  name: "即将上线",       sub: "敬请期待",   cover: "", link: "", active: false },
+      { key: "e7",  name: "即将上线",       sub: "敬请期待",   cover: "", link: "", active: false },
+      { key: "e8",  name: "即将上线",       sub: "敬请期待",   cover: "", link: "", active: false },
+    ];
 
-    const articles = document.querySelectorAll('article');
+    const n = albums.length;
+    const track = document.getElementById("galleryTrack");
+    const viewport = document.getElementById("galleryViewport");
+    let current = 0;
+    let radius = 220;
+    let startX = 0;
+    let isDragging = false;
+    let dragOffset = 0;
 
-    function f(k) {
-      if(Math.abs(k) > .5)
-        scrollTo(0, .5*(k - Math.sign(k) + 1)*(document.documentElement.offsetHeight - window.innerHeight))
+    function getRadius() {
+      const w = viewport.offsetWidth;
+      if (w < 380) return 180;
+      if (w < 500) return 220;
+      return 260;
     }
 
-    f(-1);
+    function buildGallery() {
+      track.innerHTML = "";
+      radius = getRadius();
 
-    addEventListener('scroll', () => {
-      const k = +getComputedStyle(document.body).getPropertyValue('--k');
-      f(k);
+      albums.forEach((album, i) => {
+        const item = document.createElement("div");
+        item.className = "gallery-item" + (album.active ? "" : " empty-card");
+        item.dataset.index = i;
 
-      articles.forEach(a => {
-        const sel = +getComputedStyle(a).getPropertyValue('--sel');
-        a.classList.toggle('is-front', sel > 0.8);
+        const angle = (i / n) * Math.PI * 2;
+        const x = Math.sin(angle) * radius;
+        const z = Math.cos(angle) * radius - radius;
+
+        item.style.transform = `translateX(${x}px) translateZ(${z}px) scale(${0.5 + 0.5 * (z + radius) / (2 * radius)})`;
+
+        if (album.active && album.cover) {
+          item.innerHTML = `
+            <div class="card-face">
+              <img src="${album.cover}" alt="${album.name}" draggable="false" />
+              <div class="card-overlay">
+                <h2>${album.name}</h2>
+                <em>${album.sub}</em>
+              </div>
+            </div>`;
+          item.addEventListener("click", () => {
+            if (item.classList.contains("is-active")) {
+              location.href = album.link;
+            }
+          });
+        } else {
+          item.innerHTML = `
+            <div class="card-face">
+              <i class="fa-solid fa-lock"></i>
+              <span>即将上线</span>
+            </div>`;
+        }
+
+        track.appendChild(item);
       });
+
+      updatePositions(0, false);
+    }
+
+    function updatePositions(offset, animate) {
+      const items = track.querySelectorAll(".gallery-item");
+      const angleStep = (Math.PI * 2) / n;
+
+      if (animate) {
+        track.style.transition = "transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+      } else {
+        track.style.transition = "none";
+      }
+
+      items.forEach((item, i) => {
+        const angle = angleStep * (i + offset / radius);
+        const x = Math.sin(angle) * radius;
+        const z = Math.cos(angle) * radius - radius;
+        const scale = 0.5 + 0.5 * (z + radius) / (2 * radius);
+
+        item.style.transform = `translateX(${x}px) translateZ(${z}px) scale(${scale})`;
+
+        const isFront = z > -30;
+        item.classList.toggle("is-active", isFront);
+        item.style.zIndex = Math.round((z + radius) * 10);
+      });
+    }
+
+    function snapToNearest(offset) {
+      const angleStep = (Math.PI * 2) / n;
+      const totalAngle = offset / radius;
+      const nearestIndex = Math.round(-totalAngle / angleStep);
+      const snappedAngle = -nearestIndex * angleStep;
+      const snappedOffset = snappedAngle * radius;
+      current = ((nearestIndex % n) + n) % n;
+      return snappedOffset;
+    }
+
+    viewport.addEventListener("touchstart", (e) => {
+      isDragging = true;
+      startX = e.touches[0].clientX;
+      dragOffset = 0;
+      track.style.transition = "none";
+    }, { passive: true });
+
+    viewport.addEventListener("touchmove", (e) => {
+      if (!isDragging) return;
+      dragOffset = e.touches[0].clientX - startX;
+      const baseOffset = current * ((Math.PI * 2) / n) * radius;
+      updatePositions(-(baseOffset + dragOffset), false);
+    }, { passive: true });
+
+    viewport.addEventListener("touchend", () => {
+      if (!isDragging) return;
+      isDragging = false;
+
+      const baseOffset = current * ((Math.PI * 2) / n) * radius;
+      const totalOffset = baseOffset + dragOffset;
+      const snapped = snapToNearest(-totalOffset);
+
+      updatePositions(-snapped, true);
+    }, { passive: true });
+
+    viewport.addEventListener("mousedown", (e) => {
+      isDragging = true;
+      startX = e.clientX;
+      dragOffset = 0;
+      track.style.transition = "none";
+      e.preventDefault();
+    });
+
+    window.addEventListener("mousemove", (e) => {
+      if (!isDragging) return;
+      dragOffset = e.clientX - startX;
+      const baseOffset = current * ((Math.PI * 2) / n) * radius;
+      updatePositions(-(baseOffset + dragOffset), false);
+    });
+
+    window.addEventListener("mouseup", () => {
+      if (!isDragging) return;
+      isDragging = false;
+
+      const baseOffset = current * ((Math.PI * 2) / n) * radius;
+      const totalOffset = baseOffset + dragOffset;
+      const snapped = snapToNearest(-totalOffset);
+
+      updatePositions(-snapped, true);
+    });
+
+    buildGallery();
+
+    window.addEventListener("resize", () => {
+      radius = getRadius();
+      buildGallery();
     });
 
     (function initFireflies() {
