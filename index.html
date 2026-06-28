@@ -4,61 +4,206 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>小宝伴眠助手</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
   <style>
-    @import url("https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;700&display=swap");
+    @import url("https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;600;700&display=swap");
+    @import url("https://fonts.googleapis.com/css2?family=Saira:wght@400;600;700&display=swap");
 
-    :root {
-      --bg-color: #0a0a0a;
-      --card-bg: #1a1a1a;
-      --text-primary: #e0e0e0;
-      --text-secondary: #888;
-      --accent: #6490f6;
+    @property --k {
+      syntax: '<number>';
+      initial-value: -1;
+      inherits: true
     }
 
-    *, *::before, *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
+    @property --ang {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false
     }
+
+    * { margin: 0; box-sizing: border-box; }
+
+    html {
+      scrollbar-width: none;
+      height: calc(var(--n)*100%)
+    }
+
+    body, header, main, section,
+    article, figure { display: grid }
 
     body {
-      font-family: 'Raleway', sans-serif;
-      background-color: var(--bg-color);
-      color: var(--text-primary);
-      min-height: 100vh;
-      min-height: 100dvh;
+      --dir: 0;
+      grid-template-rows: max-content 1fr max-content;
+      position: fixed;
+      width: 100%;
+      height: 100vh;
+      height: 100dvh;
+      color: #dedede;
+      font: clamp(.625em, 3vmin, 1.5em)/ 1.25 'Saira', 'Raleway', sans-serif;
+      animation: k 1s linear;
+      animation-timeline: scroll();
+      background: #0a0a0a;
       overflow-x: hidden;
-      -webkit-overflow-scrolling: touch;
     }
 
-    .page-header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 14px 16px;
-      background: rgba(10, 10, 10, 0.85);
-      backdrop-filter: blur(16px) saturate(1.2);
-      -webkit-backdrop-filter: blur(16px) saturate(1.2);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      overflow: hidden;
+    @keyframes k { to { --k: 1 } }
+
+    header {
+      place-content: center;
+      place-items: center;
+      padding: .8em .5em;
+      text-align: center;
+      text-wrap: balance;
+      position: relative;
+      z-index: 10;
     }
 
-    .page-header .app-title {
-      font-size: 1rem;
+    header h1 {
+      font-size: 1.1em;
       font-weight: 700;
       letter-spacing: 3px;
       color: #fff;
-      text-shadow:
-        0 0 8px rgba(100, 180, 255, 0.6),
-        0 0 20px rgba(100, 180, 255, 0.3),
-        0 0 40px rgba(100, 180, 255, 0.15);
-      position: relative;
-      z-index: 2;
+      text-shadow: 0 0 8px rgba(100, 180, 255, 0.6), 0 0 20px rgba(100, 180, 255, 0.3);
     }
+
+    header strong {
+      display: block;
+      font-size: .55em;
+      color: #7a8599;
+      margin-top: 4px;
+      font-weight: 400;
+    }
+
+    header em {
+      display: block;
+      font-size: .5em;
+      color: #555;
+      margin-top: 2px;
+      max-width: 32em;
+    }
+
+    main {
+      overflow: hidden;
+      perspective: 50em
+    }
+
+    section, article { transform-style: preserve-3d }
+
+    section {
+      --r: calc(2 + var(--dir))/ 3;
+      --w: clamp(6em, min(50vh, 30vw), 20em);
+      --z: calc(var(--f, 1.25)*-.5*var(--w)/tan(.5turn/var(--n)));
+      place-self: center;
+      translate: 0 0 var(--z);
+      rotate: var(--dir) calc(1 - var(--dir)) 0 calc((var(--k) + .5)*-1turn);
+    }
+
+    article, header, figure, img, figcaption { grid-area: 1/ 1 }
+
+    article {
+      --j: var(--i)/var(--n);
+      --dif-lin: calc(var(--j) - mod(var(--k) + 1, 1));
+      --abs-lin: abs(var(--dif-lin));
+      --dif-mid: calc(.5 - var(--abs-lin));
+      --abs-mid: abs(var(--dif-mid));
+      --dif-arc: calc(2*(.5 - var(--abs-mid)));
+      --lim: .35;
+      --sel: max(0, calc((var(--lim) - var(--dif-arc))/var(--lim)));
+      --out: calc(1 - var(--sel));
+      --hov: 0;
+      width: var(--w);
+      aspect-ratio: var(--r);
+      transform:
+        rotate3d(var(--dir), calc(1 - var(--dir)), 0, calc(var(--j)*1turn))
+        translatez(var(--z))
+        rotate(calc(var(--dir)*.5turn));
+      cursor: pointer;
+
+      header { rotate: y calc((1 + var(--hov))*.5turn) }
+
+      &:hover, &:focus-within { --hov: round(var(--sel)) }
+
+      @supports not (scale: abs(-1)) {
+        --abs-lin: max(var(--dif-lin), -1*var(--dif-lin));
+        --abs-mid: max(var(--dif-mid), -1*var(--dif-mid))
+      }
+    }
+
+    article header, figure {
+      --ang: calc(-45deg + var(--hov)*180deg);
+      overflow: hidden;
+      position: relative;
+      border: solid 4px #0000;
+      border-radius: .5em;
+      backface-visibility: hidden;
+      box-shadow: 5px 5px 13px #000;
+      background:
+        var(--url) 50%/ cover padding-box,
+        linear-gradient(#666 0 0) padding-box,
+        repeating-conic-gradient(from var(--ang),
+            #0000 0% 15%,
+            color-mix(in srgb,
+                #f48c06 calc(var(--sel)*100%), #333) 20% 30%,
+            #0000 35% 50%)
+          border-box #121212;
+      background-blend-mode: multiply, normal, normal;
+      isolation: isolate;
+      pointer-events: none;
+      transition: .35s ease-out;
+      transition-property: rotate, --ang;
+
+      &::after {
+        position: absolute;
+        inset: 0;
+        opacity: var(--out);
+        background: #03071e;
+        mix-blend-mode: color;
+        pointer-events: none;
+        content: ''
+      }
+    }
+
+    h2, em, img, a { pointer-events: auto }
+
+    h2, em, figcaption {
+      opacity: round(up, var(--sel));
+      text-shadow: 1px 1px 1px #0006
+    }
+
+    h2 {
+      font-size: 1.125em;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    em {
+      font-size: .75em;
+      color: #aaa;
+      font-style: normal;
+    }
+
+    figure { rotate: y calc(var(--hov)*.5turn) }
+
+    img {
+      width: 100%;
+      height: 100%;
+      aspect-ratio: var(--r);
+      object-fit: cover;
+      object-position: var(--pos)
+    }
+
+    figcaption {
+      align-self: end;
+      padding: .5em;
+      background: #fff3;
+      color: #040404;
+      font: Max(.75rem, .75em) 'Raleway', cursive;
+      text-align: right;
+      backdrop-filter: blur(5px) brightness(1.5);
+
+      a { color: #370617 }
+    }
+
+    footer { display: block; }
 
     .firefly {
       position: absolute;
@@ -79,157 +224,63 @@
       100% { transform: translate(var(--dx), var(--dy)); opacity: 0; }
     }
 
-    .albums-container {
-      padding: 24px 20px 40px;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
-    }
+    @media (max-aspect-ratio: 2/ 3) { :root { --dir: 1 } }
 
-    .section-title {
-      font-size: 0.75rem;
-      font-weight: 600;
-      color: var(--text-secondary);
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      padding: 0 4px;
-    }
-
-    .album-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-    }
-
-    .album-card {
-      display: flex;
-      flex-direction: column;
-      cursor: pointer;
-      transition: transform 0.2s ease;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    .album-card:active {
-      transform: scale(0.96);
-    }
-
-    .album-cover-wrap {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 1;
-      border-radius: 16px;
-      overflow: hidden;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-      border: 1.5px solid rgba(255, 255, 255, 0.06);
-    }
-
-    .album-cover-wrap img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
-
-    .album-cover-wrap .play-overlay {
-      position: absolute;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.3);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      transition: opacity 0.2s ease;
-    }
-
-    .album-card:hover .play-overlay {
-      opacity: 1;
-    }
-
-    .play-overlay .play-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #fff;
-      font-size: 1.1rem;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-    }
-
-    .album-info {
-      padding: 10px 4px 0;
-    }
-
-    .album-info .album-name {
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: var(--text-primary);
-      margin: 0 0 2px;
-    }
-
-    .album-info .album-count {
-      font-size: 0.7rem;
-      color: var(--text-secondary);
-    }
-
-    @media (max-width: 380px) {
-      .albums-container { padding: 20px 16px 36px; }
-      .album-grid { gap: 12px; }
-      .album-info .album-name { font-size: 0.8rem; }
-    }
-
-    @media (min-width: 500px) {
-      .albums-container { max-width: 480px; margin: 0 auto; }
+    @media (max-width: 480px) {
+      section { --w: clamp(5em, min(45vh, 28vw), 16em); }
+      header h1 { font-size: .95em; }
     }
   </style>
 </head>
 <body>
+  <header id="pageHeader">
+    <h1>小宝伴眠助手</h1>
+    <strong>上下滑动浏览专辑</strong>
+    <em>点击专辑封面进入播放</em>
+  </header>
 
-  <div class="page-header" id="pageHeader">
-    <div class="app-title">小宝伴眠助手</div>
-  </div>
-
-  <div class="albums-container">
-    <div class="section-title">选择专辑</div>
-    <div class="album-grid">
-
-      <div class="album-card" onclick="location.href='player.html?album=xi'">
-        <div class="album-cover-wrap">
+  <main class="scene">
+    <section class="assembly">
+      <article style="--i: 0; --url: url(picture/cover1.jpg); --pos: 50% 40%" onclick="location.href='player.html?album=xi'">
+        <header>
+          <h2>波西和皮普</h2>
+          <em>11 个故事</em>
+        </header>
+        <figure>
           <img src="picture/cover1.jpg" alt="波西和皮普" />
-          <div class="play-overlay">
-            <div class="play-icon"><i class="fa-solid fa-play"></i></div>
-          </div>
-        </div>
-        <div class="album-info">
-          <div class="album-name">波西和皮普</div>
-          <div class="album-count">11 个故事</div>
-        </div>
-      </div>
+        </figure>
+      </article>
 
-      <div class="album-card" onclick="location.href='player.html?album=cat'">
-        <div class="album-cover-wrap">
+      <article style="--i: 1; --url: url(picture-11cat/cover2.jpg); --pos: 50% 40%" onclick="location.href='player.html?album=cat'">
+        <header>
+          <h2>11只猫的故事</h2>
+          <em>故事加载中...</em>
+        </header>
+        <figure>
           <img src="picture-11cat/cover2.jpg" alt="11只猫的故事" />
-          <div class="play-overlay">
-            <div class="play-icon"><i class="fa-solid fa-play"></i></div>
-          </div>
-        </div>
-        <div class="album-info">
-          <div class="album-name">11只猫的故事</div>
-          <div class="album-count">故事加载中...</div>
-        </div>
-      </div>
+        </figure>
+      </article>
+    </section>
+  </main>
 
-    </div>
-  </div>
+  <footer></footer>
 
   <script>
+    let n = document.querySelectorAll('article').length;
+    document.documentElement.style.setProperty('--n', n);
+
+    function f(k) {
+      if(Math.abs(k) > .5)
+        scrollTo(0, .5*(k - Math.sign(k) + 1)*(document.documentElement.offsetHeight - window.innerHeight))
+    }
+
+    f(-1);
+
+    addEventListener('scroll', () => f(+getComputedStyle(document.body).getPropertyValue('--k')));
+
     (function initFireflies() {
       const header = document.getElementById("pageHeader");
-      const count = 10;
+      const count = 8;
       for (let i = 0; i < count; i++) {
         const dot = document.createElement("div");
         dot.className = "firefly";
