@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>小宝伴眠助手</title>
   <style>
-    @import url("https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;600;700&display=swap");
     @import url("https://fonts.googleapis.com/css2?family=Saira:wght@400;600;700&display=swap");
 
     @property --k {
@@ -38,7 +37,7 @@
       height: 100vh;
       height: 100dvh;
       color: #dedede;
-      font: clamp(.625em, 3vmin, 1.5em)/ 1.25 'Saira', 'Raleway', sans-serif;
+      font: clamp(.625em, 3vmin, 1.5em)/ 1.25 'Saira', sans-serif;
       animation: k 1s linear;
       animation-timeline: scroll();
       background: #0a0a0a;
@@ -50,24 +49,28 @@
     header {
       place-content: center;
       place-items: center;
-      padding: .8em .5em;
+      padding: 14px 16px;
       text-align: center;
       text-wrap: balance;
       position: relative;
       z-index: 10;
+      background: rgba(10, 10, 10, 0.85);
+      backdrop-filter: blur(20px) saturate(1.3);
+      -webkit-backdrop-filter: blur(20px) saturate(1.3);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
     }
 
     header h1 {
-      font-size: 1.1em;
+      font-size: 1em;
       font-weight: 700;
       letter-spacing: 3px;
       color: #fff;
-      text-shadow: 0 0 8px rgba(100, 180, 255, 0.6), 0 0 20px rgba(100, 180, 255, 0.3);
+      text-shadow: 0 0 10px rgba(100, 180, 255, 0.5), 0 0 24px rgba(100, 180, 255, 0.25);
     }
 
     header strong {
       display: block;
-      font-size: .55em;
+      font-size: .5em;
       color: #7a8599;
       margin-top: 4px;
       font-weight: 400;
@@ -75,7 +78,7 @@
 
     header em {
       display: block;
-      font-size: .5em;
+      font-size: .45em;
       color: #555;
       margin-top: 2px;
       max-width: 32em;
@@ -129,7 +132,7 @@
     }
 
     article header, figure {
-      --ang: calc(-45deg + var(--hov)*180deg);
+      --ang: -45deg;
       overflow: hidden;
       position: relative;
       border: solid 4px #0000;
@@ -162,6 +165,39 @@
       }
     }
 
+    article.is-empty header, article.is-empty figure {
+      --ang: -45deg;
+      background:
+        linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%) padding-box,
+        linear-gradient(#333 0 0) padding-box,
+        repeating-conic-gradient(from var(--ang),
+            #0000 0% 15%,
+            color-mix(in srgb,
+                #444 calc(var(--sel)*100%), #222) 20% 30%,
+            #0000 35% 50%)
+          border-box #121212;
+      background-blend-mode: normal, normal, normal;
+    }
+
+    .empty-label {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #444;
+      font-size: .8em;
+      pointer-events: none;
+      opacity: round(up, var(--sel));
+      gap: 6px;
+    }
+
+    .empty-label i {
+      font-size: 1.8em;
+      opacity: .4;
+    }
+
     h2, em, img, a { pointer-events: auto }
 
     h2, em, figcaption {
@@ -181,7 +217,7 @@
       font-style: normal;
     }
 
-    figure { rotate: y calc(var(--hov)*.5turn) }
+    figure { rotate: y 0deg }
 
     img {
       width: 100%;
@@ -189,18 +225,6 @@
       aspect-ratio: var(--r);
       object-fit: cover;
       object-position: var(--pos)
-    }
-
-    figcaption {
-      align-self: end;
-      padding: .5em;
-      background: #fff3;
-      color: #040404;
-      font: Max(.75rem, .75em) 'Raleway', cursive;
-      text-align: right;
-      backdrop-filter: blur(5px) brightness(1.5);
-
-      a { color: #370617 }
     }
 
     footer { display: block; }
@@ -231,6 +255,7 @@
       header h1 { font-size: .95em; }
     }
   </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
 </head>
 <body>
   <header id="pageHeader">
@@ -239,7 +264,7 @@
     <em>点击专辑封面进入播放</em>
   </header>
 
-  <main class="scene">
+  <main>
     <section class="assembly">
       <article style="--i: 0; --url: url(picture/cover1.jpg); --pos: 50% 40%" onclick="location.href='player.html?album=xi'">
         <header>
@@ -258,6 +283,66 @@
         </header>
         <figure>
           <img src="picture-11cat/cover2.jpg" alt="11只猫的故事" />
+        </figure>
+      </article>
+
+      <article class="is-empty" style="--i: 2">
+        <header>
+          <h2>即将上线</h2>
+          <em>敬请期待</em>
+        </header>
+        <figure>
+          <div class="empty-label"><i class="fa-solid fa-lock"></i>即将上线</div>
+        </figure>
+      </article>
+
+      <article class="is-empty" style="--i: 3">
+        <header>
+          <h2>即将上线</h2>
+          <em>敬请期待</em>
+        </header>
+        <figure>
+          <div class="empty-label"><i class="fa-solid fa-lock"></i>即将上线</div>
+        </figure>
+      </article>
+
+      <article class="is-empty" style="--i: 4">
+        <header>
+          <h2>即将上线</h2>
+          <em>敬请期待</em>
+        </header>
+        <figure>
+          <div class="empty-label"><i class="fa-solid fa-lock"></i>即将上线</div>
+        </figure>
+      </article>
+
+      <article class="is-empty" style="--i: 5">
+        <header>
+          <h2>即将上线</h2>
+          <em>敬请期待</em>
+        </header>
+        <figure>
+          <div class="empty-label"><i class="fa-solid fa-lock"></i>即将上线</div>
+        </figure>
+      </article>
+
+      <article class="is-empty" style="--i: 6">
+        <header>
+          <h2>即将上线</h2>
+          <em>敬请期待</em>
+        </header>
+        <figure>
+          <div class="empty-label"><i class="fa-solid fa-lock"></i>即将上线</div>
+        </figure>
+      </article>
+
+      <article class="is-empty" style="--i: 7">
+        <header>
+          <h2>即将上线</h2>
+          <em>敬请期待</em>
+        </header>
+        <figure>
+          <div class="empty-label"><i class="fa-solid fa-lock"></i>即将上线</div>
         </figure>
       </article>
     </section>
