@@ -108,8 +108,40 @@
     }
 
     .gallery-item.is-active .card-face {
-      border-color: rgba(100, 180, 255, 0.4);
-      box-shadow: 0 0 28px rgba(100, 180, 255, 0.2), 0 8px 28px rgba(0, 0, 0, 0.6);
+      border-color: rgba(100, 180, 255, 0.35);
+      box-shadow:
+        0 0 15px rgba(100, 180, 255, 0.25),
+        0 0 40px rgba(100, 180, 255, 0.15),
+        0 0 70px rgba(100, 180, 255, 0.08),
+        0 8px 28px rgba(0, 0, 0, 0.5);
+    }
+
+    .card-reflection {
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 100%;
+      height: 100%;
+      border-radius: 14px;
+      overflow: hidden;
+      transform: scaleY(-1);
+      pointer-events: none;
+      opacity: 0;
+      -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 60%);
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, transparent 60%);
+      transition: opacity 0.4s ease;
+    }
+
+    .gallery-item.is-active .card-reflection {
+      opacity: 1;
+    }
+
+    .card-reflection img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
     }
 
     .gallery-item .card-face img {
@@ -294,6 +326,9 @@
                 <h2>${album.name}</h2>
                 <em>${album.sub}</em>
               </div>
+            </div>
+            <div class="card-reflection">
+              <img src="${album.cover}" alt="" draggable="false" />
             </div>`;
           item.addEventListener("click", () => {
             if (parseInt(item.dataset.index) === currentIndex) {
