@@ -14,7 +14,6 @@
       --text-primary: #e0e0e0;
       --text-secondary: #888;
       --accent: #6490f6;
-      --vinyl-speed: 3s;
     }
 
     *, *::before, *::after {
@@ -28,6 +27,7 @@
       background-color: var(--bg-color);
       color: var(--text-primary);
       min-height: 100vh;
+      min-height: 100dvh;
       overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
     }
@@ -39,8 +39,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 8px 16px;
-      background: rgba(10, 10, 10, 0.8);
+      padding: 14px 16px;
+      background: rgba(10, 10, 10, 0.85);
       backdrop-filter: blur(16px) saturate(1.2);
       -webkit-backdrop-filter: blur(16px) saturate(1.2);
       border-bottom: 1px solid rgba(255, 255, 255, 0.06);
@@ -48,7 +48,7 @@
     }
 
     .page-header .app-title {
-      font-size: 0.85rem;
+      font-size: 1rem;
       font-weight: 700;
       letter-spacing: 3px;
       color: #fff;
@@ -79,456 +79,111 @@
       100% { transform: translate(var(--dx), var(--dy)); opacity: 0; }
     }
 
-    .songs-container {
-      padding: 6px 0 260px;
+    .albums-container {
+      padding: 24px 20px 40px;
       display: flex;
       flex-direction: column;
-      gap: 3px;
+      gap: 24px;
     }
 
-    .song-section {
+    .section-title {
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      padding: 0 4px;
+    }
+
+    .album-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .album-card {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 2px 16px;
+      flex-direction: column;
       cursor: pointer;
+      transition: transform 0.2s ease;
+      -webkit-tap-highlight-color: transparent;
     }
 
-    .music-player-wrap {
+    .album-card:active {
+      transform: scale(0.96);
+    }
+
+    .album-cover-wrap {
       position: relative;
       width: 100%;
-      max-width: 420px;
-    }
-
-    .music-player-card {
-      position: relative;
-      background: var(--card-bg);
-      border-radius: 14px;
-      overflow: visible;
-      box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
+      aspect-ratio: 1;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
       border: 1.5px solid rgba(255, 255, 255, 0.06);
     }
 
-    .music-player-card::after {
-      content: '';
-      position: absolute;
-      bottom: -2px;
-      left: 16px;
-      width: 70%;
-      height: 6px;
-      background: rgba(0, 0, 0, 0.6);
-      filter: blur(6px);
-      transform: rotate(-2deg);
-      border-radius: 50%;
-      z-index: 0;
-    }
-
-    .card-top {
-      padding: 12px 16px 0;
-      text-align: center;
-    }
-
-    .card-top .artist-name {
-      font-size: 0.9rem;
-      font-weight: 400;
-      margin: 0;
-      color: var(--text-primary);
-    }
-
-    .card-album {
-      position: relative;
-      width: 100%;
-      height: 140px;
-      margin: 10px 0 0;
-      overflow: visible;
-    }
-
-    .album-art-wrap {
-      position: absolute;
-      top: 50%;
-      left: 20px;
-      transform: translateY(-50%);
-      width: 110px;
-      height: 110px;
-      z-index: 10;
-      border-radius: 5px;
-      overflow: hidden;
-      box-shadow: 3px 3px 12px rgba(0, 0, 0, 0.65);
-    }
-
-    .album-art-wrap img {
+    .album-cover-wrap img {
       width: 100%;
       height: 100%;
       object-fit: cover;
       display: block;
     }
 
-    .vinyl-disc {
-      position: absolute;
-      top: 50%;
-      left: 40px;
-      transform: translateY(-50%);
-      width: 115px;
-      height: 115px;
-      border-radius: 50%;
-      background: radial-gradient(circle at center,
-        #333 0%, #333 18%,
-        #1a1a1a 18%, #1a1a1a 20%,
-        #2a2a2a 20%, #2a2a2a 22%,
-        #1a1a1a 22%, #1a1a1a 35%,
-        #222 35%, #222 37%,
-        #1a1a1a 37%, #1a1a1a 48%,
-        #222 48%, #222 50%,
-        #1a1a1a 50%, #1a1a1a 100%
-      );
-      box-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
-      z-index: 5;
-      transition: left 500ms ease-in-out;
-      will-change: transform, left;
-    }
-
-    .vinyl-disc::before {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 34px;
-      height: 34px;
-      border-radius: 50%;
-      background-image: var(--cover-url);
-      background-size: cover;
-      background-position: center;
-      background-repeat: no-repeat;
-    }
-
-    .vinyl-disc::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #555;
-      z-index: 2;
-    }
-
-    .song-section.is-playing .vinyl-disc {
-      left: 55%;
-      animation: spin var(--vinyl-speed) linear infinite;
-    }
-
-    .song-section:not(.is-playing) .vinyl-disc {
-      animation: none;
-    }
-
-    .vinyl-grooves {
+    .album-cover-wrap .play-overlay {
       position: absolute;
       inset: 0;
-      border-radius: 50%;
-      background: repeating-radial-gradient(
-        circle at center,
-        transparent 0px,
-        transparent 3px,
-        rgba(255,255,255,0.03) 3px,
-        rgba(255,255,255,0.03) 4px
-      );
-    }
-
-    @keyframes spin {
-      0% { transform: translateY(-50%) rotate(0deg); }
-      100% { transform: translateY(-50%) rotate(360deg); }
-    }
-
-    .controls-block {
-      display: flex;
-      align-items: center;
-      justify-content: space-evenly;
-      padding: 10px 12px;
-      background: rgba(255, 255, 255, 0.06);
-      backdrop-filter: blur(12px) saturate(1.2);
-      -webkit-backdrop-filter: blur(12px) saturate(1.2);
-      border-radius: 14px;
-      border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .controls-block .ctrl-btn-group {
+      background: rgba(0, 0, 0, 0.3);
       display: flex;
       align-items: center;
       justify-content: center;
-      flex: 1;
+      opacity: 0;
+      transition: opacity 0.2s ease;
     }
 
-    .controls-block .ctrl-btn {
-      display: inline-flex;
+    .album-card:hover .play-overlay {
+      opacity: 1;
+    }
+
+    .play-overlay .play-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      display: flex;
       align-items: center;
       justify-content: center;
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      border: none;
-      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      font-size: 1.1rem;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .album-info {
+      padding: 10px 4px 0;
+    }
+
+    .album-info .album-name {
+      font-size: 0.85rem;
+      font-weight: 600;
       color: var(--text-primary);
-      font-size: 0.8rem;
-      cursor: pointer;
-      transition: all 0.2s;
+      margin: 0 0 2px;
     }
 
-    .controls-block .ctrl-btn:hover {
-      background: rgba(255, 255, 255, 0.18);
-    }
-
-    .controls-block .ctrl-btn.play-btn {
-      width: 46px;
-      height: 46px;
-      font-size: 1rem;
-      background: var(--accent);
-      color: #fff;
-    }
-
-    .pill-radio-container {
-      --main-color: #6490f6;
-      --secondary-color: #7873f5;
-      --text-color: #aaa;
-      --pill-bg: rgba(255, 255, 255, 0.08);
-      --total-options: 3;
-
-      display: flex;
-      position: relative;
-      background: var(--pill-bg);
-      border-radius: 3rem;
-      padding: 0.3rem 0.5rem;
-      gap: 0;
-      box-shadow: 0 0 12px rgba(0, 0, 0, 0.3) inset;
-      width: fit-content;
-    }
-
-    .pill-radio-container input {
-      display: none;
-    }
-
-    .pill-radio-container label {
-      position: relative;
-      padding: 0.35rem 0.7rem;
-      border-radius: 3rem;
-      cursor: pointer;
-      font-weight: 600;
-      font-size: 0.65rem;
-      color: var(--text-color);
-      transition: color 0.3s ease-in-out;
-      z-index: 2;
-      white-space: nowrap;
-    }
-
-    .pill-radio-container input:checked + label {
-      color: #fff;
-    }
-
-    .pill-radio-container label:hover {
-      color: var(--main-color);
-    }
-
-    .pill-radio-container .pill-indicator {
-      position: absolute;
-      bottom: 3px;
-      left: 0;
-      height: 3px;
-      width: calc(100% / var(--total-options));
-      background: linear-gradient(to right, var(--main-color), var(--secondary-color));
-      border-radius: 2px;
-      transition: transform 0.3s ease-in-out;
-      z-index: 1;
-    }
-
-    #pill-speed-100:checked ~ .pill-indicator {
-      transform: translateX(0%);
-    }
-    #pill-speed-080:checked ~ .pill-indicator {
-      transform: translateX(100%);
-    }
-    #pill-speed-060:checked ~ .pill-indicator {
-      transform: translateX(200%);
-    }
-
-    .auto-vol-mini {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-
-    .auto-vol-mini .toggle {
-      width: 40px;
-      height: 20px;
-      background-color: #f44336;
-      border-radius: 1rem;
-      padding: 0 0.1rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      transition: background-color 300ms 300ms;
-      position: relative;
-    }
-
-    .auto-vol-mini .toggle__circle {
-      width: 16px;
-      height: 16px;
-      background-color: hsl(0, 0%, 95%);
-      border-radius: 50%;
-      margin-left: 0;
-      transition: margin 500ms ease-in-out;
-      flex-shrink: 0;
-    }
-
-    .auto-vol-mini .toggle-label {
-      font-size: 0.55rem;
-      color: rgba(255, 255, 255, 0.5);
-      letter-spacing: 1px;
-      font-weight: 600;
-      line-height: 1;
-      white-space: nowrap;
-    }
-
-    #auto-vol-check:checked + .toggle > .toggle__circle {
-      margin-left: calc(40px - (.1rem * 2) - 16px);
-    }
-
-    #auto-vol-check:checked + .toggle {
-      background-color: #41a63c;
-    }
-
-    :not(#auto-vol-check:checked) + .toggle {
-      background-color: #f44336;
-    }
-
-    .bottom-bar {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      z-index: 100;
-      background: rgba(20, 20, 20, 0.92);
-      backdrop-filter: blur(16px) saturate(1.2);
-      -webkit-backdrop-filter: blur(16px) saturate(1.2);
-      border-top: 1px solid rgba(255, 255, 255, 0.1);
-      padding: 10px 20px 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .bottom-bar .progress-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .bottom-bar .progress-time {
-      font-size: 0.6rem;
+    .album-info .album-count {
+      font-size: 0.7rem;
       color: var(--text-secondary);
-      min-width: 32px;
-      text-align: center;
     }
 
-    .bottom-bar input[type="range"].progress-bar {
-      flex: 1;
-      appearance: none;
-      -webkit-appearance: none;
-      height: 3px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 3px;
-      outline: none;
-      cursor: pointer;
+    @media (max-width: 380px) {
+      .albums-container { padding: 20px 16px 36px; }
+      .album-grid { gap: 12px; }
+      .album-info .album-name { font-size: 0.8rem; }
     }
 
-    .bottom-bar input[type="range"].progress-bar::-webkit-slider-thumb {
-      appearance: none;
-      -webkit-appearance: none;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--accent);
-      cursor: pointer;
-    }
-
-    .bottom-bar input[type="range"].progress-bar::-moz-range-thumb {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--accent);
-      cursor: pointer;
-      border: none;
-    }
-
-    .bottom-bar .volume-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .bottom-bar .vol-icon {
-      font-size: 0.6rem;
-      color: var(--text-secondary);
-      width: 16px;
-      text-align: center;
-    }
-
-    .bottom-bar .vol-label {
-      font-size: 11px;
-      color: var(--text-secondary);
-      min-width: 28px;
-    }
-
-    .bottom-bar input[type="range"].vol-bar {
-      flex: 0 0 60%;
-      appearance: none;
-      -webkit-appearance: none;
-      height: 3px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 3px;
-      outline: none;
-      cursor: pointer;
-    }
-
-    .bottom-bar input[type="range"].vol-bar::-webkit-slider-thumb {
-      appearance: none;
-      -webkit-appearance: none;
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--text-secondary);
-      cursor: pointer;
-    }
-
-    .bottom-bar input[type="range"].vol-bar::-moz-range-thumb {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      background: var(--text-secondary);
-      cursor: pointer;
-      border: none;
-    }
-
-    .bottom-bar .now-playing {
-      font-size: 0.65rem;
-      color: var(--text-secondary);
-      text-align: center;
-      margin-bottom: 0;
-    }
-
-    @media (max-width: 480px) {
-      .card-album { height: 120px; }
-      .album-art-wrap { width: 95px; height: 95px; }
-      .vinyl-disc { width: 100px; height: 100px; }
-      .vinyl-disc::before { width: 30px; height: 30px; }
-      .card-top { padding: 10px 12px 0; }
-      .card-top .artist-name { font-size: 0.8rem; }
-      .controls-block .ctrl-btn { width: 34px; height: 34px; font-size: 0.7rem; }
-      .controls-block .ctrl-btn.play-btn { width: 40px; height: 40px; font-size: 0.85rem; }
-      .controls-block { gap: 0; padding: 8px 8px; }
-      .pill-radio-container label { padding: 0.3rem 0.6rem; font-size: 0.6rem; }
-      .pill-radio-container { padding: 0.25rem 0.4rem; }
+    @media (min-width: 500px) {
+      .albums-container { max-width: 480px; margin: 0 auto; }
     }
   </style>
 </head>
@@ -538,448 +193,43 @@
     <div class="app-title">小宝伴眠助手</div>
   </div>
 
-  <div class="songs-container">
+  <div class="albums-container">
+    <div class="section-title">选择专辑</div>
+    <div class="album-grid">
 
-    <div class="song-section" data-index="0">
-      <div class="music-player-wrap">
-        <div class="music-player-card">
-          <div class="card-top">
-            <h1 class="artist-name">1红气球</h1>
-          </div>
-          <div class="card-album">
-            <div class="album-art-wrap">
-              <img src="picture/1hongqiqiu.jpg" alt="红气球" />
-            </div>
-            <div class="vinyl-disc">
-              <div class="vinyl-grooves"></div>
-            </div>
+      <div class="album-card" onclick="location.href='player.html?album=xi'">
+        <div class="album-cover-wrap">
+          <img src="picture/cover1.jpg" alt="波西和皮普" />
+          <div class="play-overlay">
+            <div class="play-icon"><i class="fa-solid fa-play"></i></div>
           </div>
         </div>
-      </div>
-    </div>
-
-    <div class="song-section" data-index="1">
-      <div class="music-player-wrap">
-        <div class="music-player-card">
-          <div class="card-top">
-            <h1 class="artist-name">2尿裤子</h1>
-          </div>
-          <div class="card-album">
-            <div class="album-art-wrap">
-              <img src="picture/2niaokuzi.jpg" alt="尿裤子" />
-            </div>
-            <div class="vinyl-disc">
-              <div class="vinyl-grooves"></div>
-            </div>
-          </div>
+        <div class="album-info">
+          <div class="album-name">波西和皮普</div>
+          <div class="album-count">11 个故事</div>
         </div>
       </div>
-    </div>
 
-    <div class="song-section" data-index="2">
-      <div class="music-player-wrap">
-        <div class="music-player-card">
-          <div class="card-top">
-            <h1 class="artist-name">3滑板车</h1>
-          </div>
-          <div class="card-album">
-            <div class="album-art-wrap">
-              <img src="picture/3huabanche.jpg" alt="滑板车" />
-            </div>
-            <div class="vinyl-disc">
-              <div class="vinyl-grooves"></div>
-            </div>
+      <div class="album-card" onclick="location.href='player.html?album=cat'">
+        <div class="album-cover-wrap">
+          <img src="picture-11cat/cover2.jpg" alt="11只猫的故事" />
+          <div class="play-overlay">
+            <div class="play-icon"><i class="fa-solid fa-play"></i></div>
           </div>
         </div>
-      </div>
-    </div>
-
-    <div class="song-section" data-index="3">
-      <div class="music-player-wrap">
-        <div class="music-player-card">
-          <div class="card-top">
-            <h1 class="artist-name">4大怪兽</h1>
-          </div>
-          <div class="card-album">
-            <div class="album-art-wrap">
-              <img src="picture/4daguaishou.jpg" alt="大怪兽" />
-            </div>
-            <div class="vinyl-disc">
-              <div class="vinyl-grooves"></div>
-            </div>
-          </div>
+        <div class="album-info">
+          <div class="album-name">11只猫的故事</div>
+          <div class="album-count">故事加载中...</div>
         </div>
       </div>
-    </div>
 
-    <div class="song-section" data-index="4">
-      <div class="music-player-wrap">
-        <div class="music-player-card">
-          <div class="card-top">
-            <h1 class="artist-name">5下雪天</h1>
-          </div>
-          <div class="card-album">
-            <div class="album-art-wrap">
-              <img src="picture/5xiaxuetian.jpg" alt="下雪天" />
-            </div>
-            <div class="vinyl-disc">
-              <div class="vinyl-grooves"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="song-section" data-index="5">
-      <div class="music-player-wrap">
-        <div class="music-player-card">
-          <div class="card-top">
-            <h1 class="artist-name">6最心爱的玩具</h1>
-          </div>
-          <div class="card-album">
-            <div class="album-art-wrap">
-              <img src="picture/6zuixinaidewanju.jpeg" alt="最心爱的玩具" />
-            </div>
-            <div class="vinyl-disc">
-              <div class="vinyl-grooves"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="song-section" data-index="6">
-      <div class="music-player-wrap">
-        <div class="music-player-card">
-          <div class="card-top">
-            <h1 class="artist-name">7大搜索</h1>
-          </div>
-          <div class="card-album">
-            <div class="album-art-wrap">
-              <img src="picture/7dasousuo.jpeg" alt="大搜索" />
-            </div>
-            <div class="vinyl-disc">
-              <div class="vinyl-grooves"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="song-section" data-index="7">
-      <div class="music-player-wrap">
-        <div class="music-player-card">
-          <div class="card-top">
-            <h1 class="artist-name">8新朋友</h1>
-          </div>
-          <div class="card-album">
-            <div class="album-art-wrap">
-              <img src="picture/8xinpengyou.jpg" alt="新朋友" />
-            </div>
-            <div class="vinyl-disc">
-              <div class="vinyl-grooves"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="song-section" data-index="8">
-      <div class="music-player-wrap">
-        <div class="music-player-card">
-          <div class="card-top">
-            <h1 class="artist-name">9圣诞树</h1>
-          </div>
-          <div class="card-album">
-            <div class="album-art-wrap">
-              <img src="picture/9shengdanshu.jpeg" alt="圣诞树" />
-            </div>
-            <div class="vinyl-disc">
-              <div class="vinyl-grooves"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="song-section" data-index="9">
-      <div class="music-player-wrap">
-        <div class="music-player-card">
-          <div class="card-top">
-            <h1 class="artist-name">10生日快乐</h1>
-          </div>
-          <div class="card-album">
-            <div class="album-art-wrap">
-              <img src="picture/10shengrikuaile.jpg" alt="生日快乐" />
-            </div>
-            <div class="vinyl-disc">
-              <div class="vinyl-grooves"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="song-section" data-index="10">
-      <div class="music-player-wrap">
-        <div class="music-player-card">
-          <div class="card-top">
-            <h1 class="artist-name">11小蜗牛</h1>
-          </div>
-          <div class="card-album">
-            <div class="album-art-wrap">
-              <img src="picture/11xiaowoniu.jpg" alt="小蜗牛" />
-            </div>
-            <div class="vinyl-disc">
-              <div class="vinyl-grooves"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-  <div class="bottom-bar" id="bottomBar">
-    <div class="now-playing" id="nowPlaying">选择一首故事开始播放</div>
-    <div class="progress-row">
-      <span class="progress-time current-time">0:00</span>
-      <input type="range" class="progress-bar" id="globalProgress" value="0" min="0" max="100" step="0.1" />
-      <span class="progress-time total-time">0:00</span>
-    </div>
-    <div class="volume-row">
-      <span class="vol-label">故事</span>
-      <i class="fa-solid fa-book vol-icon"></i>
-      <input type="range" class="vol-bar story-vol" id="globalStoryVol" value="100" min="0" max="100" />
-    </div>
-    <div class="volume-row">
-      <span class="vol-label">音乐</span>
-      <i class="fa-solid fa-music vol-icon"></i>
-      <input type="range" class="vol-bar bgm-vol" id="globalBgmVol" value="100" min="0" max="100" />
-    </div>
-    <div class="controls-block">
-      <div class="ctrl-btn-group">
-        <button class="ctrl-btn play-btn" id="globalPlayPause"><i class="fa-solid fa-play"></i></button>
-      </div>
-      <div class="ctrl-btn-group">
-        <div class="pill-radio-container">
-          <input checked name="speed" id="pill-speed-100" type="radio" />
-          <label for="pill-speed-100">1x</label>
-          <input name="speed" id="pill-speed-080" type="radio" />
-          <label for="pill-speed-080">0.8x</label>
-          <input name="speed" id="pill-speed-060" type="radio" />
-          <label for="pill-speed-060">0.6x</label>
-          <div class="pill-indicator"></div>
-        </div>
-      </div>
-      <div class="ctrl-btn-group">
-        <div class="auto-vol-mini">
-          <input type="checkbox" id="auto-vol-check" checked hidden />
-          <label for="auto-vol-check" class="toggle">
-            <div class="toggle__circle"></div>
-          </label>
-          <span class="toggle-label">降音</span>
-        </div>
-      </div>
     </div>
   </div>
-
-  <audio id="audioPlayer" preload="auto"></audio>
-  <audio id="bgmPlayer" src="audio/BGM.mp3" type="audio/mpeg" loop preload="auto"></audio>
 
   <script>
-    const songs = [
-      { src: "audio/1hongqiqiu.mp3", cover: "picture/1hongqiqiu.jpg", name: "红气球", sub: "快乐飞行" },
-      { src: "audio/2niaokuzi.mp3", cover: "picture/2niaokuzi.jpg", name: "尿裤子", sub: "尴尬时刻" },
-      { src: "audio/3huabanche.mp3", cover: "picture/3huabanche.jpg", name: "滑板车", sub: "自由滑行" },
-      { src: "audio/4daguaishou.mp3", cover: "picture/4daguaishou.jpg", name: "大怪兽", sub: "勇敢冒险" },
-      { src: "audio/5xiaxuetian.mp3", cover: "picture/5xiaxuetian.jpg", name: "下雪天", sub: "冬日乐趣" },
-      { src: "audio/6zuixinaidewanju.mp3", cover: "picture/6zuixinaidewanju.jpeg", name: "最心爱的玩具", sub: "心爱宝贝" },
-      { src: "audio/7dasousuo.mp3", cover: "picture/7dasousuo.jpeg", name: "大搜索", sub: "探索发现" },
-      { src: "audio/8xinpengyou.mp3", cover: "picture/8xinpengyou.jpg", name: "新朋友", sub: "友谊之歌" },
-      { src: "audio/9shengdanshu.mp3", cover: "picture/9shengdanshu.jpeg", name: "圣诞树", sub: "节日欢庆" },
-      { src: "audio/10shengrikuaile.mp3", cover: "picture/10shengrikuaile.jpg", name: "生日快乐", sub: "生日祝福" },
-      { src: "audio/11xiaowoniu.mp3", cover: "picture/11xiaowoniu.jpg", name: "小蜗牛", sub: "慢慢前行" }
-    ];
-
-    const audioPlayer = document.getElementById("audioPlayer");
-    const bgmPlayer = document.getElementById("bgmPlayer");
-    const autoVolCheck = document.getElementById("auto-vol-check");
-    const sections = document.querySelectorAll(".song-section");
-    const globalProgress = document.getElementById("globalProgress");
-    const globalStoryVol = document.getElementById("globalStoryVol");
-    const globalBgmVol = document.getElementById("globalBgmVol");
-    const nowPlaying = document.getElementById("nowPlaying");
-    const globalPlayPause = document.getElementById("globalPlayPause");
-
-    let currentSongIndex = -1;
-    let isPlaying = false;
-    let songPlayCount = 0;
-    let baseStoryVol = 100;
-    let baseBgmVol = 100;
-    let currentPlaybackRate = 1.0;
-
-    function formatTime(s) {
-      if (isNaN(s) || !isFinite(s)) return "0:00";
-      const m = Math.floor(s / 60);
-      const sec = Math.floor(s % 60);
-      return m + ":" + (sec < 10 ? "0" : "") + sec;
-    }
-
-    function updateVinylCover(index) {
-      const section = sections[index];
-      if (!section) return;
-      const disc = section.querySelector(".vinyl-disc");
-      const coverUrl = songs[index].cover;
-      disc.style.backgroundImage = `url('${coverUrl}')`;
-      disc.style.backgroundSize = "cover";
-      disc.style.backgroundPosition = "center";
-      disc.style.backgroundRepeat = "no-repeat";
-      disc.style.setProperty("--cover-url", `url('${coverUrl}')`);
-      const artWrap = section.querySelector(".album-art-wrap img");
-      if (artWrap) artWrap.src = coverUrl;
-    }
-
-    function setActiveSection(index) {
-      const icon = globalPlayPause.querySelector("i");
-      if (index >= 0 && isPlaying) {
-        icon.classList.remove("fa-play");
-        icon.classList.add("fa-pause");
-      } else {
-        icon.classList.remove("fa-pause");
-        icon.classList.add("fa-play");
-      }
-      sections.forEach((sec, i) => {
-        sec.classList.toggle("is-playing", i === index && isPlaying);
-      });
-    }
-
-    function loadSong(index, autoplay) {
-      if (index < 0 || index >= songs.length) return;
-      currentSongIndex = index;
-      audioPlayer.src = songs[index].src;
-      audioPlayer.playbackRate = currentPlaybackRate;
-      updateVinylCover(index);
-      songPlayCount = 0;
-      baseStoryVol = parseInt(globalStoryVol.value);
-      baseBgmVol = parseInt(globalBgmVol.value);
-      nowPlaying.textContent = songs[index].name;
-      if (autoplay) {
-        playSong();
-      } else {
-        setActiveSection(index);
-      }
-      sections[index].scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-
-    function playSong() {
-      audioPlayer.play();
-      bgmPlayer.play();
-      isPlaying = true;
-      if (currentSongIndex >= 0) {
-        setActiveSection(currentSongIndex);
-        nowPlaying.textContent = songs[currentSongIndex].name;
-      }
-    }
-
-    function pauseSong() {
-      audioPlayer.pause();
-      bgmPlayer.pause();
-      isPlaying = false;
-      if (currentSongIndex >= 0) {
-        setActiveSection(currentSongIndex);
-        nowPlaying.textContent = songs[currentSongIndex].name + " (已暂停)";
-      }
-    }
-
-    function nextSong() {
-      applyVolumeDecay();
-      const next = (currentSongIndex + 1) % songs.length;
-      loadSong(next, true);
-    }
-
-    function applyVolumeDecay() {
-      if (!autoVolCheck.checked) return;
-      songPlayCount++;
-      const newStory = Math.max(0, baseStoryVol - songPlayCount * 6);
-      const newBgm = Math.max(0, baseBgmVol - songPlayCount * 6);
-      audioPlayer.volume = newStory / 100;
-      bgmPlayer.volume = newBgm / 100;
-      globalStoryVol.value = newStory;
-      globalBgmVol.value = newBgm;
-    }
-
-    function updateProgressUI() {
-      globalProgress.value = audioPlayer.currentTime;
-      document.querySelector(".current-time").textContent = formatTime(audioPlayer.currentTime);
-      document.querySelector(".total-time").textContent = formatTime(audioPlayer.duration);
-    }
-
-    audioPlayer.addEventListener("loadedmetadata", () => {
-      globalProgress.max = audioPlayer.duration;
-      updateProgressUI();
-    });
-
-    audioPlayer.addEventListener("timeupdate", () => {
-      if (!audioPlayer.paused) updateProgressUI();
-    });
-
-    audioPlayer.addEventListener("ended", nextSong);
-
-    globalProgress.addEventListener("input", () => {
-      audioPlayer.currentTime = globalProgress.value;
-    });
-
-    globalProgress.addEventListener("change", () => {
-      if (isPlaying) playSong();
-    });
-
-    globalStoryVol.addEventListener("input", () => {
-      audioPlayer.volume = globalStoryVol.value / 100;
-      baseStoryVol = parseInt(globalStoryVol.value);
-      songPlayCount = 0;
-    });
-
-    globalBgmVol.addEventListener("input", () => {
-      bgmPlayer.volume = globalBgmVol.value / 100;
-      baseBgmVol = parseInt(globalBgmVol.value);
-      songPlayCount = 0;
-    });
-
-    globalPlayPause.addEventListener("click", () => {
-      if (currentSongIndex < 0) {
-        loadSong(0, true);
-      } else if (isPlaying) {
-        pauseSong();
-      } else {
-        playSong();
-      }
-    });
-
-    sections.forEach((sec, index) => {
-      sec.addEventListener("click", () => {
-        if (currentSongIndex === index && isPlaying) {
-          pauseSong();
-        } else if (currentSongIndex === index && !isPlaying) {
-          playSong();
-        } else {
-          loadSong(index, true);
-        }
-      });
-
-      updateVinylCover(index);
-    });
-
-    audioPlayer.volume = baseStoryVol / 100;
-    bgmPlayer.volume = baseBgmVol / 100;
-
-    document.getElementById("pill-speed-100").addEventListener("change", () => { currentPlaybackRate = 1.0; audioPlayer.playbackRate = 1.0; });
-    document.getElementById("pill-speed-080").addEventListener("change", () => { currentPlaybackRate = 0.8; audioPlayer.playbackRate = 0.8; });
-    document.getElementById("pill-speed-060").addEventListener("change", () => { currentPlaybackRate = 0.6; audioPlayer.playbackRate = 0.6; });
-
     (function initFireflies() {
       const header = document.getElementById("pageHeader");
-      const count = 12;
+      const count = 10;
       for (let i = 0; i < count; i++) {
         const dot = document.createElement("div");
         dot.className = "firefly";
