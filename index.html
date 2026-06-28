@@ -13,12 +13,6 @@
       inherits: true
     }
 
-    @property --ang {
-      syntax: '<angle>';
-      initial-value: 0deg;
-      inherits: false
-    }
-
     * { margin: 0; box-sizing: border-box; }
 
     html {
@@ -100,7 +94,7 @@
       rotate: var(--dir) calc(1 - var(--dir)) 0 calc((var(--k) + .5)*-1turn);
     }
 
-    article, header, figure, img, figcaption { grid-area: 1/ 1 }
+    article, header, figure, img { grid-area: 1/ 1 }
 
     article {
       --j: var(--i)/var(--n);
@@ -112,7 +106,6 @@
       --lim: .35;
       --sel: max(0, calc((var(--lim) - var(--dif-arc))/var(--lim)));
       --out: calc(1 - var(--sel));
-      --hov: 0;
       width: var(--w);
       aspect-ratio: var(--r);
       transform:
@@ -120,10 +113,7 @@
         translatez(var(--z))
         rotate(calc(var(--dir)*.5turn));
       cursor: pointer;
-
-      header { rotate: y calc((1 + var(--hov))*.5turn) }
-
-      &:hover, &:focus-within { --hov: round(var(--sel)) }
+      transition: filter 0.3s ease;
 
       @supports not (scale: abs(-1)) {
         --abs-lin: max(var(--dif-lin), -1*var(--dif-lin));
@@ -131,100 +121,105 @@
       }
     }
 
-    article header, figure {
-      --ang: -45deg;
+    article figure {
       overflow: hidden;
       position: relative;
-      border: solid 4px #0000;
-      border-radius: .5em;
+      border: solid 3px rgba(255,255,255,0.08);
+      border-radius: .6em;
       backface-visibility: hidden;
       box-shadow: 5px 5px 13px #000;
-      background:
-        var(--url) 50%/ cover padding-box,
-        linear-gradient(#666 0 0) padding-box,
-        repeating-conic-gradient(from var(--ang),
-            #0000 0% 15%,
-            color-mix(in srgb,
-                #f48c06 calc(var(--sel)*100%), #333) 20% 30%,
-            #0000 35% 50%)
-          border-box #121212;
-      background-blend-mode: multiply, normal, normal;
-      isolation: isolate;
+      background: #121212;
       pointer-events: none;
-      transition: .35s ease-out;
-      transition-property: rotate, --ang;
-
-      &::after {
-        position: absolute;
-        inset: 0;
-        opacity: var(--out);
-        background: #03071e;
-        mix-blend-mode: color;
-        pointer-events: none;
-        content: ''
-      }
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
     }
 
-    article.is-empty header, article.is-empty figure {
-      --ang: -45deg;
-      background:
-        linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%) padding-box,
-        linear-gradient(#333 0 0) padding-box,
-        repeating-conic-gradient(from var(--ang),
-            #0000 0% 15%,
-            color-mix(in srgb,
-                #444 calc(var(--sel)*100%), #222) 20% 30%,
-            #0000 35% 50%)
-          border-box #121212;
-      background-blend-mode: normal, normal, normal;
+    article.is-front figure {
+      border-color: rgba(100, 180, 255, 0.3);
+      box-shadow: 0 0 20px rgba(100, 180, 255, 0.15), 5px 5px 13px #000;
     }
 
-    .empty-label {
+    article:not(.is-front) figure::after {
+      content: '';
       position: absolute;
       inset: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      color: #444;
-      font-size: .8em;
+      background: rgba(0, 0, 0, 0.55);
       pointer-events: none;
-      opacity: round(up, var(--sel));
-      gap: 6px;
     }
 
-    .empty-label i {
-      font-size: 1.8em;
-      opacity: .4;
+    article figure header {
+      background: none;
+      border: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      padding: 0;
     }
 
-    h2, em, img, a { pointer-events: auto }
-
-    h2, em, figcaption {
-      opacity: round(up, var(--sel));
-      text-shadow: 1px 1px 1px #0006
+    .card-info {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px 10px 8px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.8));
+      pointer-events: none;
+      z-index: 2;
+      opacity: 0;
+      transition: opacity 0.3s ease;
     }
 
-    h2 {
-      font-size: 1.125em;
+    article.is-front .card-info {
+      opacity: 1;
+    }
+
+    .card-info h2 {
+      font-size: 1em;
       font-weight: 700;
       color: #fff;
+      text-shadow: 1px 1px 3px #000;
+      margin: 0;
     }
 
-    em {
-      font-size: .75em;
+    .card-info em {
+      font-size: .7em;
       color: #aaa;
       font-style: normal;
+      text-shadow: 1px 1px 2px #000;
     }
-
-    figure { rotate: y 0deg }
 
     img {
       width: 100%;
       height: 100%;
       aspect-ratio: var(--r);
       object-fit: cover;
-      object-position: var(--pos)
+      object-position: var(--pos);
+      transition: filter 0.3s ease;
+    }
+
+    article:not(.is-front) img {
+      filter: grayscale(1) brightness(0.7);
+    }
+
+    article.is-front img {
+      filter: grayscale(0) brightness(1);
+    }
+
+    .empty-cover {
+      width: 100%;
+      height: 100%;
+      aspect-ratio: var(--r);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+      color: #333;
+      font-size: .8em;
+      gap: 6px;
+    }
+
+    .empty-cover i {
+      font-size: 1.6em;
+      opacity: .3;
     }
 
     footer { display: block; }
@@ -261,88 +256,68 @@
   <header id="pageHeader">
     <h1>小宝伴眠助手</h1>
     <strong>上下滑动浏览专辑</strong>
-    <em>点击专辑封面进入播放</em>
+    <em>点击封面进入播放</em>
   </header>
 
   <main>
     <section class="assembly">
       <article style="--i: 0; --url: url(picture/cover1.jpg); --pos: 50% 40%" onclick="location.href='player.html?album=xi'">
-        <header>
-          <h2>波西和皮普</h2>
-          <em>11 个故事</em>
-        </header>
         <figure>
           <img src="picture/cover1.jpg" alt="波西和皮普" />
+          <header>
+            <div class="card-info">
+              <h2>波西和皮普</h2>
+              <em>11 个故事</em>
+            </div>
+          </header>
         </figure>
       </article>
 
       <article style="--i: 1; --url: url(picture-11cat/cover2.jpg); --pos: 50% 40%" onclick="location.href='player.html?album=cat'">
-        <header>
-          <h2>11只猫的故事</h2>
-          <em>故事加载中...</em>
-        </header>
         <figure>
           <img src="picture-11cat/cover2.jpg" alt="11只猫的故事" />
+          <header>
+            <div class="card-info">
+              <h2>11只猫的故事</h2>
+              <em>故事加载中...</em>
+            </div>
+          </header>
         </figure>
       </article>
 
       <article class="is-empty" style="--i: 2">
-        <header>
-          <h2>即将上线</h2>
-          <em>敬请期待</em>
-        </header>
         <figure>
-          <div class="empty-label"><i class="fa-solid fa-lock"></i>即将上线</div>
+          <div class="empty-cover"><i class="fa-solid fa-lock"></i>即将上线</div>
         </figure>
       </article>
 
       <article class="is-empty" style="--i: 3">
-        <header>
-          <h2>即将上线</h2>
-          <em>敬请期待</em>
-        </header>
         <figure>
-          <div class="empty-label"><i class="fa-solid fa-lock"></i>即将上线</div>
+          <div class="empty-cover"><i class="fa-solid fa-lock"></i>即将上线</div>
         </figure>
       </article>
 
       <article class="is-empty" style="--i: 4">
-        <header>
-          <h2>即将上线</h2>
-          <em>敬请期待</em>
-        </header>
         <figure>
-          <div class="empty-label"><i class="fa-solid fa-lock"></i>即将上线</div>
+          <div class="empty-cover"><i class="fa-solid fa-lock"></i>即将上线</div>
         </figure>
       </article>
 
       <article class="is-empty" style="--i: 5">
-        <header>
-          <h2>即将上线</h2>
-          <em>敬请期待</em>
-        </header>
         <figure>
-          <div class="empty-label"><i class="fa-solid fa-lock"></i>即将上线</div>
+          <div class="empty-cover"><i class="fa-solid fa-lock"></i>即将上线</div>
         </figure>
       </article>
 
       <article class="is-empty" style="--i: 6">
-        <header>
-          <h2>即将上线</h2>
-          <em>敬请期待</em>
-        </header>
         <figure>
-          <div class="empty-label"><i class="fa-solid fa-lock"></i>即将上线</div>
+          <div class="empty-cover"><i class="fa-solid fa-lock"></i>即将上线</div>
         </figure>
       </article>
 
       <article class="is-empty" style="--i: 7">
-        <header>
-          <h2>即将上线</h2>
-          <em>敬请期待</em>
-        </header>
         <figure>
-          <div class="empty-label"><i class="fa-solid fa-lock"></i>即将上线</div>
+          <div class="empty-cover"><i class="fa-solid fa-lock"></i>即将上线</div>
         </figure>
       </article>
     </section>
@@ -354,6 +329,8 @@
     let n = document.querySelectorAll('article').length;
     document.documentElement.style.setProperty('--n', n);
 
+    const articles = document.querySelectorAll('article');
+
     function f(k) {
       if(Math.abs(k) > .5)
         scrollTo(0, .5*(k - Math.sign(k) + 1)*(document.documentElement.offsetHeight - window.innerHeight))
@@ -361,7 +338,15 @@
 
     f(-1);
 
-    addEventListener('scroll', () => f(+getComputedStyle(document.body).getPropertyValue('--k')));
+    addEventListener('scroll', () => {
+      const k = +getComputedStyle(document.body).getPropertyValue('--k');
+      f(k);
+
+      articles.forEach(a => {
+        const sel = +getComputedStyle(a).getPropertyValue('--sel');
+        a.classList.toggle('is-front', sel > 0.8);
+      });
+    });
 
     (function initFireflies() {
       const header = document.getElementById("pageHeader");
