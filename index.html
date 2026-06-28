@@ -21,7 +21,6 @@
       flex-direction: column;
       -webkit-user-select: none;
       user-select: none;
-      touch-action: pan-y;
     }
 
     .page-header {
@@ -59,29 +58,39 @@
       flex: 1;
       position: relative;
       overflow: hidden;
-      perspective: 800px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .gallery-scene {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      perspective: 900px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .gallery-track {
-      position: absolute;
-      top: 50%;
-      left: 50%;
+      position: relative;
       width: 0;
       height: 0;
       transform-style: preserve-3d;
-      transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      transform: rotateX(-18deg);
+      transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     }
 
     .gallery-item {
       position: absolute;
-      width: 180px;
-      height: 180px;
-      left: -90px;
-      top: -90px;
+      width: 170px;
+      height: 170px;
+      left: -85px;
+      top: -85px;
       transform-style: preserve-3d;
-      transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-                  filter 0.4s ease,
-                  opacity 0.4s ease;
+      transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                  filter 0.4s ease;
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
     }
@@ -92,14 +101,15 @@
       border-radius: 14px;
       overflow: hidden;
       position: relative;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
-      border: 2px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+      border: 2px solid rgba(255, 255, 255, 0.06);
       background: #1a1a1a;
+      backface-visibility: hidden;
     }
 
     .gallery-item.is-active .card-face {
       border-color: rgba(100, 180, 255, 0.4);
-      box-shadow: 0 0 24px rgba(100, 180, 255, 0.2), 0 8px 24px rgba(0, 0, 0, 0.6);
+      box-shadow: 0 0 28px rgba(100, 180, 255, 0.2), 0 8px 28px rgba(0, 0, 0, 0.6);
     }
 
     .gallery-item .card-face img {
@@ -107,27 +117,23 @@
       height: 100%;
       object-fit: cover;
       display: block;
+      pointer-events: none;
     }
 
     .gallery-item:not(.is-active) .card-face img {
-      filter: grayscale(1) brightness(0.5);
+      filter: grayscale(1) brightness(0.45);
     }
 
     .gallery-item.is-active .card-face img {
       filter: grayscale(0) brightness(1);
     }
 
-    .gallery-item:not(.is-active)::after {
+    .gallery-item:not(.is-active) .card-face::after {
       content: '';
       position: absolute;
       inset: 0;
-      border-radius: 14px;
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(0, 0, 0, 0.35);
       pointer-events: none;
-    }
-
-    .gallery-item.is-active::after {
-      display: none;
     }
 
     .card-overlay {
@@ -135,8 +141,8 @@
       bottom: 0;
       left: 0;
       right: 0;
-      padding: 12px 10px 10px;
-      background: linear-gradient(transparent, rgba(0,0,0,0.85));
+      padding: 14px 10px 10px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.9));
       opacity: 0;
       transition: opacity 0.3s ease;
       pointer-events: none;
@@ -148,7 +154,7 @@
     }
 
     .card-overlay h2 {
-      font-size: 0.95em;
+      font-size: 0.9em;
       font-weight: 700;
       color: #fff;
       text-shadow: 1px 1px 3px #000;
@@ -156,7 +162,7 @@
     }
 
     .card-overlay em {
-      font-size: 0.7em;
+      font-size: 0.65em;
       color: #aaa;
       font-style: normal;
       text-shadow: 1px 1px 2px #000;
@@ -176,6 +182,31 @@
     .empty-card .card-face i {
       font-size: 1.6em;
       opacity: 0.3;
+    }
+
+    .empty-card .card-face::after { display: none; }
+
+    .dots {
+      flex-shrink: 0;
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 0 20px;
+    }
+
+    .dots .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      transition: all 0.3s ease;
+    }
+
+    .dots .dot.active {
+      background: var(--accent, #6490f6);
+      box-shadow: 0 0 8px rgba(100, 180, 255, 0.5);
+      width: 18px;
+      border-radius: 3px;
     }
 
     .firefly {
@@ -198,11 +229,11 @@
     }
 
     @media (min-width: 500px) {
-      .gallery-item { width: 220px; height: 220px; left: -110px; top: -110px; }
+      .gallery-item { width: 210px; height: 210px; left: -105px; top: -105px; }
     }
 
     @media (max-width: 360px) {
-      .gallery-item { width: 160px; height: 160px; left: -80px; top: -80px; }
+      .gallery-item { width: 150px; height: 150px; left: -75px; top: -75px; }
     }
   </style>
 </head>
@@ -213,53 +244,49 @@
   </div>
 
   <div class="gallery-viewport" id="galleryViewport">
-    <div class="gallery-track" id="galleryTrack"></div>
+    <div class="gallery-scene">
+      <div class="gallery-track" id="galleryTrack"></div>
+    </div>
   </div>
+
+  <div class="dots" id="dots"></div>
 
   <script>
     const albums = [
-      { key: "xi",  name: "波西和皮普",    sub: "11 个故事",  cover: "picture/cover1.jpg",          link: "player.html?album=xi",  active: true },
-      { key: "cat", name: "11只猫的故事",   sub: "故事加载中...", cover: "picture-11cat/cover2.jpg",    link: "player.html?album=cat", active: true },
-      { key: "e3",  name: "即将上线",       sub: "敬请期待",   cover: "", link: "", active: false },
-      { key: "e4",  name: "即将上线",       sub: "敬请期待",   cover: "", link: "", active: false },
-      { key: "e5",  name: "即将上线",       sub: "敬请期待",   cover: "", link: "", active: false },
-      { key: "e6",  name: "即将上线",       sub: "敬请期待",   cover: "", link: "", active: false },
-      { key: "e7",  name: "即将上线",       sub: "敬请期待",   cover: "", link: "", active: false },
-      { key: "e8",  name: "即将上线",       sub: "敬请期待",   cover: "", link: "", active: false },
+      { key: "xi",  name: "波西和皮普",  sub: "11 个故事",  cover: "picture/cover1.jpg",       link: "player.html?album=xi",  real: true },
+      { key: "cat", name: "11只猫的故事", sub: "故事加载中...", cover: "picture-11cat/cover2.jpg", link: "player.html?album=cat", real: true },
+      { key: "e3",  name: "即将上线",     sub: "敬请期待",   cover: "", link: "", real: false },
+      { key: "e4",  name: "即将上线",     sub: "敬请期待",   cover: "", link: "", real: false },
+      { key: "e5",  name: "即将上线",     sub: "敬请期待",   cover: "", link: "", real: false },
+      { key: "e6",  name: "即将上线",     sub: "敬请期待",   cover: "", link: "", real: false },
+      { key: "e7",  name: "即将上线",     sub: "敬请期待",   cover: "", link: "", real: false },
+      { key: "e8",  name: "即将上线",     sub: "敬请期待",   cover: "", link: "", real: false },
     ];
 
     const n = albums.length;
     const track = document.getElementById("galleryTrack");
     const viewport = document.getElementById("galleryViewport");
-    let current = 0;
-    let radius = 220;
-    let startX = 0;
-    let isDragging = false;
-    let dragOffset = 0;
+    const dotsContainer = document.getElementById("dots");
 
-    function getRadius() {
-      const w = viewport.offsetWidth;
-      if (w < 380) return 180;
-      if (w < 500) return 220;
-      return 260;
-    }
+    let currentIndex = 0;
+    let currentAngle = 0;
+    let targetAngle = 0;
+    const angleStep = (Math.PI * 2) / n;
+
+    let isDragging = false;
+    let startX = 0;
+    let dragStartAngle = 0;
 
     function buildGallery() {
       track.innerHTML = "";
-      radius = getRadius();
+      dotsContainer.innerHTML = "";
 
       albums.forEach((album, i) => {
         const item = document.createElement("div");
-        item.className = "gallery-item" + (album.active ? "" : " empty-card");
+        item.className = "gallery-item" + (album.real ? "" : " empty-card");
         item.dataset.index = i;
 
-        const angle = (i / n) * Math.PI * 2;
-        const x = Math.sin(angle) * radius;
-        const z = Math.cos(angle) * radius - radius;
-
-        item.style.transform = `translateX(${x}px) translateZ(${z}px) scale(${0.5 + 0.5 * (z + radius) / (2 * radius)})`;
-
-        if (album.active && album.cover) {
+        if (album.real && album.cover) {
           item.innerHTML = `
             <div class="card-face">
               <img src="${album.cover}" alt="${album.name}" draggable="false" />
@@ -269,7 +296,7 @@
               </div>
             </div>`;
           item.addEventListener("click", () => {
-            if (item.classList.contains("is-active")) {
+            if (parseInt(item.dataset.index) === currentIndex) {
               location.href = album.link;
             }
           });
@@ -282,120 +309,115 @@
         }
 
         track.appendChild(item);
+
+        const dot = document.createElement("div");
+        dot.className = "dot";
+        dotsContainer.appendChild(dot);
       });
 
-      updatePositions(0, false);
+      updatePositions();
     }
 
-    function updatePositions(offset, animate) {
+    function updatePositions() {
       const items = track.querySelectorAll(".gallery-item");
-      const angleStep = (Math.PI * 2) / n;
-
-      if (animate) {
-        track.style.transition = "transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
-      } else {
-        track.style.transition = "none";
-      }
+      const dots = dotsContainer.querySelectorAll(".dot");
 
       items.forEach((item, i) => {
-        const angle = angleStep * (i + offset / radius);
-        const x = Math.sin(angle) * radius;
-        const z = Math.cos(angle) * radius - radius;
-        const scale = 0.5 + 0.5 * (z + radius) / (2 * radius);
+        const angle = angleStep * i + currentAngle;
+        const x = Math.sin(angle) * 220;
+        const z = Math.cos(angle) * 220;
+        const y = (1 - Math.cos(angle)) * -40;
 
-        item.style.transform = `translateX(${x}px) translateZ(${z}px) scale(${scale})`;
+        const scale = 0.6 + 0.4 * ((z + 220) / 440);
 
-        const isFront = z > -30;
-        item.classList.toggle("is-active", isFront);
-        item.style.zIndex = Math.round((z + radius) * 10);
+        item.style.transform = `translateX(${x}px) translateY(${y}px) translateZ(${z}px) scale(${scale})`;
+        item.style.zIndex = Math.round((z + 220) * 10);
+
+        const isActive = i === currentIndex;
+        item.classList.toggle("is-active", isActive);
+      });
+
+      dots.forEach((dot, i) => {
+        dot.classList.toggle("active", i === currentIndex);
       });
     }
 
-    function snapToNearest(offset) {
-      const angleStep = (Math.PI * 2) / n;
-      const totalAngle = offset / radius;
-      const nearestIndex = Math.round(-totalAngle / angleStep);
-      const snappedAngle = -nearestIndex * angleStep;
-      const snappedOffset = snappedAngle * radius;
-      current = ((nearestIndex % n) + n) % n;
-      return snappedOffset;
+    function snapToNearest() {
+      let normalized = currentAngle % (Math.PI * 2);
+      if (normalized < 0) normalized += Math.PI * 2;
+
+      let bestIndex = 0;
+      let bestDist = Infinity;
+
+      for (let i = 0; i < n; i++) {
+        const targetAngleI = -angleStep * i;
+        let normTarget = targetAngleI % (Math.PI * 2);
+        if (normTarget < 0) normTarget += Math.PI * 2;
+
+        let diff = Math.abs(normalized - normTarget);
+        if (diff > Math.PI) diff = Math.PI * 2 - diff;
+
+        if (diff < bestDist) {
+          bestDist = diff;
+          bestIndex = i;
+        }
+      }
+
+      currentIndex = bestIndex;
+      targetAngle = -angleStep * currentIndex;
+
+      let diff = targetAngle - currentAngle;
+      while (diff > Math.PI) diff -= Math.PI * 2;
+      while (diff < -Math.PI) diff += Math.PI * 2;
+      targetAngle = currentAngle + diff;
+
+      track.style.transition = "transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+      currentAngle = targetAngle;
+      updatePositions();
     }
 
-    viewport.addEventListener("touchstart", (e) => {
+    function onStart(clientX) {
       isDragging = true;
-      startX = e.touches[0].clientX;
-      dragOffset = 0;
+      startX = clientX;
+      dragStartAngle = currentAngle;
       track.style.transition = "none";
-    }, { passive: true });
+    }
 
-    viewport.addEventListener("touchmove", (e) => {
+    function onMove(clientX) {
       if (!isDragging) return;
-      dragOffset = e.touches[0].clientX - startX;
-      const baseOffset = current * ((Math.PI * 2) / n) * radius;
-      updatePositions(-(baseOffset + dragOffset), false);
-    }, { passive: true });
+      const dx = clientX - startX;
+      const angleDelta = dx / 180;
+      currentAngle = dragStartAngle + angleDelta;
+      updatePositions();
+    }
 
-    viewport.addEventListener("touchend", () => {
+    function onEnd() {
       if (!isDragging) return;
       isDragging = false;
+      snapToNearest();
+    }
 
-      const baseOffset = current * ((Math.PI * 2) / n) * radius;
-      const totalOffset = baseOffset + dragOffset;
-      const snapped = snapToNearest(-totalOffset);
+    viewport.addEventListener("touchstart", (e) => onStart(e.touches[0].clientX), { passive: true });
+    viewport.addEventListener("touchmove", (e) => { onMove(e.touches[0].clientX); e.preventDefault(); }, { passive: false });
+    viewport.addEventListener("touchend", () => onEnd(), { passive: true });
 
-      updatePositions(-snapped, true);
-    }, { passive: true });
-
-    viewport.addEventListener("mousedown", (e) => {
-      isDragging = true;
-      startX = e.clientX;
-      dragOffset = 0;
-      track.style.transition = "none";
-      e.preventDefault();
-    });
-
-    window.addEventListener("mousemove", (e) => {
-      if (!isDragging) return;
-      dragOffset = e.clientX - startX;
-      const baseOffset = current * ((Math.PI * 2) / n) * radius;
-      updatePositions(-(baseOffset + dragOffset), false);
-    });
-
-    window.addEventListener("mouseup", () => {
-      if (!isDragging) return;
-      isDragging = false;
-
-      const baseOffset = current * ((Math.PI * 2) / n) * radius;
-      const totalOffset = baseOffset + dragOffset;
-      const snapped = snapToNearest(-totalOffset);
-
-      updatePositions(-snapped, true);
-    });
+    viewport.addEventListener("mousedown", (e) => { onStart(e.clientX); e.preventDefault(); });
+    window.addEventListener("mousemove", (e) => onMove(e.clientX));
+    window.addEventListener("mouseup", () => onEnd());
 
     buildGallery();
 
-    window.addEventListener("resize", () => {
-      radius = getRadius();
-      buildGallery();
-    });
-
     (function initFireflies() {
       const header = document.getElementById("pageHeader");
-      const count = 8;
-      for (let i = 0; i < count; i++) {
+      for (let i = 0; i < 8; i++) {
         const dot = document.createElement("div");
         dot.className = "firefly";
-        const x = Math.random() * 100;
-        const y = Math.random() * 100;
-        dot.style.left = x + "%";
-        dot.style.top = y + "%";
-        const dx = (Math.random() - 0.5) * 60;
-        const dy = (Math.random() - 0.5) * 30;
-        dot.style.setProperty("--dx", dx + "px");
-        dot.style.setProperty("--dy", dy + "px");
+        dot.style.left = Math.random() * 100 + "%";
+        dot.style.top = Math.random() * 100 + "%";
+        dot.style.setProperty("--dx", (Math.random() - 0.5) * 60 + "px");
+        dot.style.setProperty("--dy", (Math.random() - 0.5) * 30 + "px");
         const dur = 4 + Math.random() * 6;
-        const delay = Math.random() * dur;
-        dot.style.animation = `fireflyDrift ${dur}s ${delay}s ease-in-out infinite`;
+        dot.style.animation = `fireflyDrift ${dur}s ${Math.random() * dur}s ease-in-out infinite`;
         header.appendChild(dot);
       }
     })();
